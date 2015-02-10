@@ -1,0 +1,143 @@
+﻿if not var.init then
+   /*
+   Osc.port = 12000
+   Osc.ip = "localhost"
+   Osc.broadcast = false
+   */
+   var.host = "localhost"
+   var.port = 12000
+   var.init = true
+endif
+
+// the original mouse cursor is still controlled by the actual mouse
+fakemouse.DirectInputX = mouse1.DirectInputX
+fakemouse.DirectInputY = mouse1.DirectInputY
+mouse.LeftButton = mouse1.LeftButton
+mouse.RightButton = mouse1.RightButton
+
+// Show a fake cursor 2
+if not var.shown2 then
+  cursor2.visible = true
+  var.Mouse2x = mouse.CursorPosX
+  var.Mouse2y = mouse.CursorPosY
+  var.shown2 = true
+endif
+
+// Show a fake cursor 3
+if not var.shown3 then
+  cursor3.visible = true
+  var.Mouse3x = mouse.CursorPosX
+  var.Mouse3y = mouse.CursorPosY
+  var.shown3 = true
+endif
+
+//use both wiimotes as mice with left and right click functions
+var.cursor2x = Wiimote1.PointerX
+var.cursor2y = Wiimote1.PointerY
+Cursor2.x = var.cursor2x
+Cursor2.y = var.cursor2y
+Cursor2.LeftButton = Wiimote1.A
+Cursor2.RightButton = Wiimote1.B
+
+var.cursor3x = Wiimote2.PointerX
+var.cursor3y = Wiimote2.PointerY
+Cursor3.x = var.cursor3x
+Cursor3.y = var.cursor3y
+Cursor3.LeftButton = Wiimote2.A
+Cursor3.RightButton = Wiimote2.B
+
+//prepare button data for OSC
+if (wiimote1.A) then
+   var.cursor2_leftbutton = 1
+   else var.cursor2_leftbutton = 0
+endif
+
+if (wiimote1.B) then
+   var.cursor2_rightbutton = 1
+   else var.cursor2_rightbutton = 0
+endif
+
+if (wiimote2.A) then
+   var.cursor3_leftbutton = 1
+   else var.cursor3_leftbutton = 0
+endif
+
+if (wiimote2.B) then
+   var.cursor3_rightbutton = 1
+   else var.cursor3_rightbutton = 0
+endif
+
+/*
+var.test_data += 0.05
+if var.test_data > 0.99 then var.test_data = 0
+var._test_data = MapRange(var.test_data, 0, 1, 0, 127)
+
+var.test_data_y += 0.03
+if var.test_data_y > 0.99 then var.test_data_y = 0
+var._test_data_y = MapRange(var.test_data_y, 0, 1, 0, 127)
+*/
+
+//NOTE: OSC send is bugged. Can only send integers between 0 - 127
+
+//prepare the mouse data before sending
+if var.cursor2x < 0 then var.cursor2x = 0
+if var.cursor2x > 1 then var.cursor2x = 1
+if var.cursor2y < 0 then var.cursor2y = 0
+if var.cursor2y > 1 then var.cursor2y = 1
+
+if var.cursor3x < 0 then var.cursor3x = 0
+if var.cursor3x > 1 then var.cursor3x = 1
+if var.cursor3y < 0 then var.cursor3y = 0
+if var.cursor3y > 1 then var.cursor3y = 1
+
+var.cursor2x = int(MapRange(var.cursor2x, 0,1,0,127))
+var.cursor2y = int(MapRange(var.cursor2y, 0, 1, 0, 127))
+var.cursor3x = int(MapRange(var.cursor3x, 0,1,0,127))
+var.cursor3y = int(MapRange(var.cursor3y, 0, 1, 0, 127))
+
+//send OSC data
+/*
+osc1.wii.cursor2_x = var.cursor2x
+osc1.wii.cursor2_y = var.cursor2y
+osc.wii.cursor2_leftclick = var.cursor2_leftbutton
+osc.wii.cursor2_rightclick = var.cursor2_rightbutton
+
+osc.wii.cursor3_x = Wiimote2.PointerX
+osc.wii.cursor3_y = Wiimote2.PointerY
+osc.wii.cursor3_leftclick = var.cursor3_leftbutton
+osc.wii.cursor3_rightclick = var.cursor3_rightbutton
+*/
+
+//this version of osc works
+SendOsc(var.host, var.port, "/wii/cursor2_x", var.cursor2x)
+SendOsc(var.host, var.port, "/wii/cursor2_y", var.cursor2y)
+SendOsc(var.host, var.port, "/wii/cursor2_leftclick", var.cursor2_leftbutton)
+SendOsc(var.host, var.port, "/wii/cursor2_rightclick", var.cursor2_rightbutton)
+
+SendOsc(var.host, var.port, "/wii/cursor3_x", var.cursor3x)
+SendOsc(var.host, var.port, "/wii/cursor3_y", var.cursor3y)
+SendOsc(var.host, var.port, "/wii/cursor3_leftclick", var.cursor3_leftbutton)
+SendOsc(var.host, var.port, "/wii/cursor3_rightclick", var.cursor3_rightbutton)
+
+//debug = var.cursor2x
+
+//Rumble test - only works for first controller
+/*
+if Wiimote1.PointerX < 0.01 or Wiimote1.PointerX > 0.99 or Wiimote1.PointerY < 0.01 or Wiimote1.PointerY > 0.99 then
+   Wiimote1.Rumble = true
+   else
+   Wiimote1.Rumble = false
+endif
+
+if Wiimote2.PointerX < 0.01 or Wiimote2.PointerX > 0.99 or Wiimote2.PointerY < 0.01 or Wiimote2.PointerY > 0.99 then
+   Wiimote2.Rumble = true
+   else
+   Wiimote2.Rumble = false
+endif
+*/
+
+
+
+
+
+
